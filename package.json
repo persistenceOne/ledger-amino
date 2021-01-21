@@ -1,0 +1,58 @@
+{
+  "name": "@cosmjs/launchpad-ledger",
+  "version": "0.24.0-alpha.18",
+  "description": "A library for interacting with the Cosmos Launchpad Ledger Nano App",
+  "contributors": [
+    "Will Clark <willclarktech@users.noreply.github.com>"
+  ],
+  "license": "Apache-2.0",
+  "main": "build/index.js",
+  "types": "types/index.d.ts",
+  "files": [
+    "build/",
+    "types/",
+    "*.md",
+    "!*.spec.*",
+    "!**/testdata/"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cosmos/cosmjs/tree/main/packages/launchpad-ledger"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "docs": "typedoc --options typedoc.js",
+    "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
+    "format-text": "prettier --write --prose-wrap always --print-width 80 \"./*.md\"",
+    "lint": "eslint --max-warnings 0 \"**/*.{js,ts}\"",
+    "lint-fix": "eslint --max-warnings 0 \"**/*.{js,ts}\" --fix",
+    "premove-types": "shx rm -rf ./build/types/demo",
+    "move-types": "shx rm -rf ./types/* && shx mv build/types/* ./types && shx rm -rf ./types/testdata ./types/*.spec.d.ts",
+    "format-types": "prettier --write --loglevel warn \"./types/**/*.d.ts\"",
+    "prebuild": "shx rm -rf ./build",
+    "build": "tsc",
+    "postbuild": "yarn move-types && yarn format-types",
+    "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
+    "test-node": "node jasmine-testrunner.js",
+    "test": "yarn build-or-skip && yarn test-node",
+    "demo-node": "yarn build-or-skip && node ./demo/node.js",
+    "coverage": "nyc --reporter=text --reporter=lcov yarn test --quiet",
+    "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.demo.config.js"
+  },
+  "dependencies": {
+    "@cosmjs/launchpad": "^0.24.0-alpha.18",
+    "@cosmjs/utils": "^0.24.0-alpha.18",
+    "ledger-cosmos-js": "^2.1.8",
+    "semver": "^7.3.2"
+  },
+  "devDependencies": {
+    "@ledgerhq/hw-transport": "^5.25.0",
+    "@ledgerhq/hw-transport-node-hid": "^5.25.0",
+    "@ledgerhq/hw-transport-webusb": "^5.25.0",
+    "@types/ledgerhq__hw-transport-node-hid": "^4.22.2",
+    "@types/ledgerhq__hw-transport-webusb": "^4.70.1",
+    "@types/semver": "^7.3.4"
+  }
+}
