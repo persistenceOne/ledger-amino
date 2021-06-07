@@ -1,5 +1,4 @@
-import { makeCosmoshubPath } from "@cosmjs/amino";
-import { HdPath, Secp256k1Signature } from "@cosmjs/crypto";
+import { HdPath, Secp256k1Signature, stringToPath } from "@cosmjs/crypto";
 import { fromUtf8 } from "@cosmjs/encoding";
 import { assert } from "@cosmjs/utils";
 import Transport from "@ledgerhq/hw-transport";
@@ -18,13 +17,17 @@ export interface LedgerAppErrorResponse {
 }
 /* eslint-enable */
 
+function makeHdPath(accountNumber:string = "0", addressIndex:string = "0", coinType:string = "750") {
+  return stringToPath("m/44'/" + coinType + "'/" + accountNumber + "'/0/" + addressIndex);
+}
+
 function unharden(hdPath: HdPath): number[] {
   return hdPath.map((n) => (n.isHardened() ? n.toNumber() - 2 ** 31 : n.toNumber()));
 }
 
-const cosmosHdPath = makeCosmoshubPath(0);
-const cosmosBech32Prefix = "cosmos";
-const requiredCosmosAppVersion = "1.5.3";
+const persistenceHdPath = makeHdPath();
+const persistenceBech32Prefix = "persistence";
+const requiredPersistenceAppVersion = "1.0.0";
 
 export interface LaunchpadLedgerOptions {
   readonly hdPaths?: readonly HdPath[];
@@ -40,8 +43,8 @@ export class LaunchpadLedger {
 
   public constructor(transport: Transport, options: LaunchpadLedgerOptions = {}) {
     const defaultOptions = {
-      hdPaths: [cosmosHdPath],
-      prefix: cosmosBech32Prefix,
+      hdPaths: [persistenceHdPath],
+      prefix: persistenceBech32Prefix,
       testModeAllowed: false,
     };
 
@@ -53,7 +56,7 @@ export class LaunchpadLedger {
 
   public async getCosmosAppVersion(): Promise<string> {
     await this.verifyCosmosAppIsOpen();
-    assert(this.app, "Cosmos Ledger App is not connected");
+    assert(this.app, "Persistence Ledger App is not connected");
 
     const response = await this.app.getVersion();
     this.handleLedgerErrors(response);
@@ -65,7 +68,7 @@ export class LaunchpadLedger {
 
   public async getPubkey(hdPath?: HdPath): Promise<Uint8Array> {
     await this.verifyDeviceIsReady();
-    assert(this.app, "Cosmos Ledger App is not connected");
+    assert(this.app, "Persistence Ledger App is not connected");
 
     const hdPathToUse = hdPath || this.hdPaths[0];
     // ledger-cosmos-js hardens the first three indices
@@ -89,7 +92,7 @@ export class LaunchpadLedger {
 
   public async sign(message: Uint8Array, hdPath?: HdPath): Promise<Uint8Array> {
     await this.verifyDeviceIsReady();
-    assert(this.app, "Cosmos Ledger App is not connected");
+    assert(this.app, "Persistence Ledger App is not connected");
 
     const hdPathToUse = hdPath || this.hdPaths[0];
     // ledger-cosmos-js hardens the first three indices
@@ -100,12 +103,12 @@ export class LaunchpadLedger {
 
   private verifyAppMode(testMode: boolean): void {
     if (testMode && !this.testModeAllowed) {
-      throw new Error(`DANGER: The Cosmos Ledger app is in test mode and should not be used on mainnet!`);
+      throw new Error(`DANGER: The Persistence Ledger app is in test mode and should not be used on mainnet!`);
     }
   }
 
   private async getOpenAppName(): Promise<string> {
-    assert(this.app, "Cosmos Ledger App is not connected");
+    assert(this.app, "Persistence Ledger App is not connected");
 
     const response = await this.app.appInfo();
     this.handleLedgerErrors(response);
@@ -114,8 +117,8 @@ export class LaunchpadLedger {
 
   private async verifyAppVersion(): Promise<void> {
     const version = await this.getCosmosAppVersion();
-    if (!semver.gte(version, requiredCosmosAppVersion)) {
-      throw new Error("Outdated version: Please update Cosmos Ledger App to the latest version.");
+    if (!semver.gte(version, requiredPersistenceAppVersion)) {
+      throw new Error("Outdated version: Please update Persistence Ledger App to the latest version.");
     }
   }
 
@@ -123,10 +126,10 @@ export class LaunchpadLedger {
     const appName = await this.getOpenAppName();
 
     if (appName.toLowerCase() === `dashboard`) {
-      throw new Error(`Please open the Cosmos Ledger app on your Ledger device.`);
+      throw new Error(`Please open the Persistence Ledger app on your Ledger device.`);
     }
-    if (appName.toLowerCase() !== `cosmos`) {
-      throw new Error(`Please close ${appName} and open the Cosmos Ledger app on your Ledger device.`);
+    if (appName.toLowerCase() !== `persistence`) {
+      throw new Error(`Please close ${appName} and open the Persistence Ledger app on your Ledger device.`);
     }
   }
 
@@ -150,8 +153,8 @@ export class LaunchpadLedger {
     switch (errorMessage) {
       case "U2F: Timeout":
         throw new Error("Connection timed out. Please try again.");
-      case "Cosmos app does not seem to be open":
-        throw new Error("Cosmos app is not open");
+      case "Persistence app does not seem to be open": //check this
+        throw new Error("Persistence app is not open");
       case "Command not allowed":
         throw new Error("Transaction rejected");
       case "Transaction rejected":
@@ -160,7 +163,7 @@ export class LaunchpadLedger {
         throw new Error("Ledger’s screensaver mode is on");
       case "Instruction not supported":
         throw new Error(
-          `Your Cosmos Ledger App is not up to date. Please update to version ${requiredCosmosAppVersion}.`,
+          `Your Persistence Ledger App is not up to date. Please update to version ${requiredPersistenceAppVersion}.`,
         );
       case "No errors":
         break;
