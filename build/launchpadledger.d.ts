@@ -1,6 +1,7 @@
 /// <reference types="ledgerhq__hw-transport" />
 import { HdPath } from "@cosmjs/crypto";
 import Transport from "@ledgerhq/hw-transport";
+import { AddressAndPublicKeyResponse, ErrorResponse } from "ledger-cosmos-js";
 export interface LedgerAppErrorResponse {
     readonly error_message?: string;
     readonly device_locked?: boolean;
@@ -26,5 +27,6 @@ export declare class LaunchpadLedger {
     private verifyAppVersion;
     private verifyCosmosAppIsOpen;
     private verifyDeviceIsReady;
+    verifyAddress(hdPath: HdPath): Promise<AddressAndPublicKeyResponse | ErrorResponse>;
     private handleLedgerErrors;
 }
