@@ -3,7 +3,8 @@ import { fromUtf8 } from "@cosmjs/encoding";
 import { assert } from "@cosmjs/utils";
 import Transport from "@ledgerhq/hw-transport";
 import CosmosApp, {
-  AppInfoResponse,
+  AddressAndPublicKeyResponse,
+  AppInfoResponse, ErrorResponse,
   PublicKeyResponse,
   SignResponse,
   VersionResponse,
@@ -136,6 +137,17 @@ export class LaunchpadLedger {
   private async verifyDeviceIsReady(): Promise<void> {
     await this.verifyAppVersion();
     await this.verifyCosmosAppIsOpen();
+  }
+
+  public async verifyAddress(hdPath: HdPath): Promise<AddressAndPublicKeyResponse | ErrorResponse> {
+    await this.verifyDeviceIsReady();
+    assert(this.app, "Persistence Ledger App is not connected");
+
+    const hdPathToUse = hdPath;
+    // ledger-cosmos-js hardens the first three indices
+    const response = await this.app.showAddressAndPubKey(unharden(hdPathToUse), "persistence");
+    this.handleLedgerErrors(response);
+    return (response as AddressAndPublicKeyResponse)
   }
 
   private handleLedgerErrors(

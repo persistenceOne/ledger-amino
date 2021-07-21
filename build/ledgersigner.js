@@ -19,6 +19,9 @@ class LedgerSigner {
         }
         return this.accounts;
     }
+    async showAddress(path) {
+        return await this.ledger.verifyAddress(path);
+    }
     async signAmino(signerAddress, signDoc) {
         const accounts = this.accounts || (await this.getAccounts());
         const accountIndex = accounts.findIndex((account) => account.address === signerAddress);
