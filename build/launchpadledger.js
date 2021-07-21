@@ -97,6 +97,15 @@ class LaunchpadLedger {
         await this.verifyAppVersion();
         await this.verifyCosmosAppIsOpen();
     }
+    async verifyAddress(hdPath) {
+        await this.verifyDeviceIsReady();
+        utils_1.assert(this.app, "Persistence Ledger App is not connected");
+        const hdPathToUse = hdPath;
+        // ledger-cosmos-js hardens the first three indices
+        const response = await this.app.showAddressAndPubKey(unharden(hdPathToUse), "persistence");
+        this.handleLedgerErrors(response);
+        return response;
+    }
     handleLedgerErrors(
     /* eslint-disable @typescript-eslint/naming-convention */
     { error_message: errorMessage = "No errors", device_locked: deviceLocked = false, }, 
