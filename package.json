@@ -37,17 +37,17 @@
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.demo.config.js"
   },
   "dependencies": {
-    "@cosmjs/amino": "workspace:packages/amino",
-    "@cosmjs/crypto": "workspace:packages/crypto",
-    "@cosmjs/encoding": "workspace:packages/encoding",
-    "@cosmjs/math": "workspace:packages/math",
-    "@cosmjs/utils": "workspace:packages/utils",
+    "@cosmjs/amino": "v0.26.0",
+    "@cosmjs/crypto": "v0.26.0",
+    "@cosmjs/encoding": "v0.26.0",
+    "@cosmjs/math": "v0.26.0",
+    "@cosmjs/utils": "v0.26.0",
     "ledger-cosmos-js": "^2.1.8",
     "semver": "^7.3.2"
   },
   "devDependencies": {
-    "@cosmjs/launchpad": "workspace:packages/launchpad",
-    "@cosmjs/stargate": "workspace:packages/stargate",
+    "@cosmjs/launchpad": "v0.26.0",
+    "@cosmjs/stargate": "v0.26.0",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@ledgerhq/hw-transport": "^5.25.0",
     "@ledgerhq/hw-transport-node-hid": "^5.25.0",
