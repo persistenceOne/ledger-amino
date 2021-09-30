@@ -46,10 +46,7 @@ async function createTransport() {
 }
 describe("LedgerSigner", () => {
     const defaultChainId = "testing";
-    const defaultFee = {
-        amount: amino_1.coins(100, "ucosm"),
-        gas: "250",
-    };
+    const defaultFee = stargate_1.calculateFee(80000, "0.025ucosm");
     const defaultMemo = "Some memo";
     const defaultSequence = "0";
     const defaultAccountNumber = "42";
@@ -61,7 +58,7 @@ describe("LedgerSigner", () => {
             const client = await stargate_1.SigningStargateClient.connectWithSigner(testutils_spec_1.simapp.endpoint, wallet);
             const amount = amino_1.coins(226644, "ucosm");
             const memo = "Ensure chain has my pubkey";
-            const sendResult = await client.sendTokens(testutils_spec_1.faucet.address, defaultLedgerAddress, amount, memo);
+            const sendResult = await client.sendTokens(testutils_spec_1.faucet.address, defaultLedgerAddress, amount, defaultFee, memo);
             stargate_1.assertIsBroadcastTxSuccess(sendResult);
         }
     });
@@ -152,7 +149,7 @@ describe("LedgerSigner", () => {
             });
             const [firstAccount] = await signer.getAccounts();
             const client = await stargate_1.SigningStargateClient.connectWithSigner(testutils_spec_1.simapp.endpoint, signer);
-            const result = await client.sendTokens(firstAccount.address, defaultLedgerAddress, amino_1.coins(1234, "ucosm"));
+            const result = await client.sendTokens(firstAccount.address, defaultLedgerAddress, amino_1.coins(1234, "ucosm"), defaultFee);
             stargate_1.assertIsBroadcastTxSuccess(result);
         }, interactiveTimeout);
     });
