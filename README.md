@@ -1,5 +1,9 @@
 # @cosmjs/ledger-amino
 
+This library is a fork of [cosmjs/ledger-amino](https://github.com/cosmos/cosmjs/tree/main/packages/ledger-amino).  
+It is required by persistence due to unique coin-type 750 that persistence uses.   
+From [cosmjs 26.3](https://github.com/cosmos/cosmjs/blob/v0.26.4/CHANGELOG.md#0263---2021-10-25) onwards cosmjs adds support for custom coin-type which can be used to connect to ledger, making this repository obsolete.
+
 [![npm version](https://img.shields.io/npm/v/@cosmjs/ledger-amino.svg)](https://www.npmjs.com/package/@cosmjs/ledger-amino)
 
 ## Supported platforms
