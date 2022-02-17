@@ -1,3 +1,5 @@
+# ⛔️ DEPRECATED ⛔️
+
 # @cosmjs/ledger-amino
 
 This library is a fork of [cosmjs/ledger-amino](https://github.com/cosmos/cosmjs/tree/main/packages/ledger-amino).  
